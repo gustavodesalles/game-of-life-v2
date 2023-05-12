@@ -10,7 +10,6 @@ int main(int argc, char **argv)
     FILE *f;
     stats_t stats_step = {0, 0, 0, 0};
     stats_t stats_total = {0, 0, 0, 0};
-    // pthread_barrier_t barrier;
 
     if (argc != 3)
     {
@@ -32,8 +31,9 @@ int main(int argc, char **argv)
     }
 
     fscanf(f, "%d %d", &size, &steps);
-    int n_celulas = size*size;
+    int n_celulas = size*size; //supondo que a matriz é sempre quadrada
 
+    //Reduz número de threads para evitar inanição
     if (n_threads > n_celulas)
     {
         n_threads = n_celulas;
@@ -42,19 +42,17 @@ int main(int argc, char **argv)
     //Instancia array de threads
     pthread_t threads[n_threads];
 
-    //Inicializa barrier
-    // pthread_barrier_init(&barrier, NULL, n_threads);
-
     //Informações necessárias para realizar os cálculos
     aux info[n_threads];
     int begin = 0;
     int intervalo = n_celulas / n_threads;
     int resto = n_celulas % n_threads;
 
+    //Popula struct com informações para cada thread
     for (int i = 0; i < n_threads; i++)
     {
         int end = begin + intervalo;
-        if (resto)
+        if (resto) //caso n_celulas / n_threads seja ímpar
         {
             --resto;
             ++end;
@@ -65,7 +63,6 @@ int main(int argc, char **argv)
         begin = end;
     }
     
-
     prev = allocate_board(size);
     next = allocate_board(size);
 
@@ -81,12 +78,13 @@ int main(int argc, char **argv)
 
     for (int i = 0; i < steps; i++)
     {
+        //Reseta valores de stats_step para o próximo passo
         stats_step.borns = 0;
         stats_step.loneliness = 0;
         stats_step.overcrowding = 0;
         stats_step.survivals = 0;
 
-        //TODO: iniciar threads que executam "play"
+        //Inicia threads que executam "play" em paralelo
         for (int j = 0; j < n_threads; j++)
         {
             info[j].board = prev;
@@ -95,7 +93,6 @@ int main(int argc, char **argv)
             pthread_create(&threads[j], NULL, play_parallel, (void *) &info[j]);
         }
         
-        // stats_step = play(prev, next, size);
         for (int j = 0; j < n_threads; j++)
         {
             pthread_join(threads[j], NULL);
