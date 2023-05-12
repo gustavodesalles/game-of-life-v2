@@ -12,13 +12,14 @@
  * A 'x' printed means on, space means off.
  *
  */
-#define _XOPEN_SOURCE 600
 #include <stdlib.h>
 #include <pthread.h>
 #include "gol.h"
 
 /* Statistics */
 stats_t statistics;
+
+// pthread_barrier_t barrier;
 
 cell_t **allocate_board(int size)
 {
@@ -169,14 +170,13 @@ void* play_parallel(void* arg)
                 if(a == 3) /* new born */
                 {
                     dados->newboard[i][j] = 1;
-                    printf("Born %d, %d\n", i, j);
                     dados->stats.borns++;
                 }
                 else /* stay unchanged */
                     dados->newboard[i][j] = dados->board[i][j];
             }
         }
-        pthread_barrier_wait(&barrier);
+        // pthread_barrier_wait(&barrier);
     // }
 
     // return stats;

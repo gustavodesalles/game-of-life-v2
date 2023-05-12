@@ -50,7 +50,7 @@ vgbuild: clean
 # O arquivo .d guarda info de dependência de headers, se ele muda, também 
 # precisamos recompilar.
 build/%.o : %.c build/%.d
-	$(CC) -Wall -Werror -std=gnu99 $(CFLAGS) $(DEPFLAGS) -o $@ -c $<
+	$(CC) -Wall -Werror -std=c11 $(CFLAGS) $(DEPFLAGS) -o $@ -c $<
 	mv -f build/$*.Td build/$*.d && touch $@
 
 # Junta todos os arquivos .o em um único magnífico binário
@@ -59,7 +59,7 @@ build/%.o : %.c build/%.d
 # a variável OBJ foi computada anteriormente, com :=
 # $^ significa *todas* as dependências ($< pega só a primeira)
 build/gol: $(OBJS)
-	$(CC) -Wall -Werror -std=gnu99 $(CFLAGS) $(LFLAGS) -o $@ $^ $(LIBS)
+	$(CC) -Wall -Werror -std=c11 $(CFLAGS) $(LFLAGS) -o $@ $^ $(LIBS)
 	mv build/gol $(OUTPUT)
 
 # Prepara .tar.gz pra submissão no moodle

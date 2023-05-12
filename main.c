@@ -1,4 +1,3 @@
-#define _XOPEN_SOURCE 600
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -11,7 +10,7 @@ int main(int argc, char **argv)
     FILE *f;
     stats_t stats_step = {0, 0, 0, 0};
     stats_t stats_total = {0, 0, 0, 0};
-    // extern pthread_barrier_t barrier;
+    // pthread_barrier_t barrier;
 
     if (argc != 3)
     {
@@ -44,7 +43,7 @@ int main(int argc, char **argv)
     pthread_t threads[n_threads];
 
     //Inicializa barrier
-    pthread_barrier_init(&barrier, NULL, n_threads);
+    // pthread_barrier_init(&barrier, NULL, n_threads);
 
     //Informações necessárias para realizar os cálculos
     aux info[n_threads];
@@ -63,7 +62,7 @@ int main(int argc, char **argv)
         info[i].size = size;
         info[i].begin = begin;
         info[i].end = end;
-        end = begin;
+        begin = end;
     }
     
 
@@ -100,11 +99,16 @@ int main(int argc, char **argv)
         for (int j = 0; j < n_threads; j++)
         {
             pthread_join(threads[j], NULL);
-            stats_total.borns += info[j].stats.borns;
-            stats_total.survivals += info[j].stats.survivals;
-            stats_total.loneliness += info[j].stats.loneliness;
-            stats_total.overcrowding += info[j].stats.overcrowding;
+            stats_step.borns += info[j].stats.borns;
+            stats_step.survivals += info[j].stats.survivals;
+            stats_step.loneliness += info[j].stats.loneliness;
+            stats_step.overcrowding += info[j].stats.overcrowding;
         }
+
+        stats_total.borns += stats_step.borns;
+        stats_total.survivals += stats_step.survivals;
+        stats_total.loneliness += stats_step.loneliness;
+        stats_total.overcrowding += stats_step.overcrowding;
 
 #ifdef DEBUG
         printf("Step %d ----------\n", i + 1);
@@ -122,7 +126,7 @@ int main(int argc, char **argv)
     print_stats(stats_total);
 #endif
 
-    pthread_barrier_destroy(&barrier);
+    // pthread_barrier_destroy(&barrier);
     free_board(prev, size);
     free_board(next, size);
 }

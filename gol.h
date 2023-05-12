@@ -1,4 +1,3 @@
-#define _XOPEN_SOURCE 600
 #include <stdio.h>
 
 /*
@@ -32,7 +31,7 @@ typedef struct {
     stats_t stats;
 } aux;
 
-extern pthread_barrier_t barrier;
+// extern pthread_barrier_t barrier;
 
 /* Allocate a GoL board of size = size^2 */
 cell_t ** allocate_board(int size);
